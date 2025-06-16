@@ -29,7 +29,7 @@ jobs:
           mkdir -p /tmp/builder/
           cp -a /proc/cpuinfo /tmp/builder/
           cp -a /proc/meminfo /tmp/builder/
-          cp -a /etc/*release /tmp/builder/
+          uname -a > /tmp/builder/kernel.txt
           echo "status=success" >> ${GITHUB_OUTPUT}
 
       - name: Upload files to Release
