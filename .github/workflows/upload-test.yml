@@ -1,8 +1,8 @@
 #==========================================================================
-# Description: Action upload test
+# Description: Upload test
 #==========================================================================
 
-name: Action upload test
+name: Upload test
 
 on:
   repository_dispatch:
@@ -10,7 +10,6 @@ on:
 
 env:
   TZ: America/New_York
-  ROOTFS_SCRIPT: compile-kernel/tools/script/armbian_rootfs.sh
 
 jobs:
   build:
@@ -44,6 +43,10 @@ jobs:
           token: ${{ secrets.GITHUB_TOKEN }}
           body: |
             ### Action upload test
+            This is just test
             - upload cpuinfo
+              * /proc/cpuinfo
             - upload meminfo
+              * /proc/meminfo
             - upload release
+              * ```uname -a > /tmp/builder/kernel.txt```
