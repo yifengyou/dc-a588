@@ -223,27 +223,56 @@ jobs:
           replacesArtifacts: true
           token: ${{ secrets.GITHUB_TOKEN }}
           body: |
-            ### Armbian Image for DC-A588 information
-            - Default username: root
-            - Default password: 123
-            ### rockdev.squashfs
-            - boot.img
+            ### 定昌DC-A588开发板Armbian构建输出(Armbian Image for DC-A588 information)
+            - 默认用户名(Default username): root
+            - 默认密码(Default password): 123
+            ### rockdev构建输出(rockdev.squashfs/rockdev.rar)
+
+            ```
+            RKDevTool/
+            ├── bin
+            │         ├── adb.exe
+            │         ├── AdbWinApi.dll
+            │         ├── AdbWinUsbApi.dll
+            │         ├── AFPTool.exe
+            │         └── RKImageMaker.exe
+            ├── config.cfg
+            ├── config.ini
+            ├── Language
+            │         ├── Chinese.ini
+            │         └── English.ini
+            ├── RKDevTool.exe
+            └── rockdev
+                └── image
+                    ├── boot.img
+                    ├── MiniLoaderAll.bin
+                    ├── misc.img
+                    ├── modules.tar.gz
+                    ├── oem.img
+                    ├── package-file
+                    ├── parameter.txt
+                    ├── recovery.img
+                    ├── rootfs.img
+                    └── uboot.img
+            ```
+
+            ### update镜像构建输出(update.img.squashfs/update.img.rar)
+
+            解压后输出update.img镜像，请使用 RKDevTool 固件更新
+
+            ### 根文件镜像地址(rootfs.img.squashfs/rootfs.img.rar)
+
+            仅包含发行版更文件系统(only rootfs.img with squashfs archive)
+
+            ### 其他镜像(Other image)
+
+
+            - MiniLoaderAll.bin
             - misc.img
+            - oem.img
+            - package-file
+            - parameter.txt
             - recovery.img
             - rootfs.img
             - uboot.img
-            - oem.img
-            - config.cfg
-            - MiniLoaderAll.bin
-            - parameter.txt
-            - package-file
-            ### update.img.squashfs
-            - updateable rockdev img
-            ### rootfs.img.squashfs
-            - only rootfs.img with squashfs archive
-
-
-
-
-
-
+            - modules.tar.gz
