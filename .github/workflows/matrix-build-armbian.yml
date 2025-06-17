@@ -166,8 +166,12 @@ jobs:
               /builder/dc-a588.git/tools/afptool -pack . temp.img && \
               /builder/dc-a588.git/tools/rkImageMaker -RK3588 MiniLoaderAll.bin temp.img update.img -os_type:androidos
 
-          # release update.img.squashfs
-          cd /builder/dc-a588.git/rockdev && mksquashfs update.img  /builder/dc-a588.git/release/update.img.squashfs
+          # release update.img.squashfs and update.img.rar
+          cd /builder/dc-a588.git/rockdev && \
+            mksquashfs update.img  /builder/dc-a588.git/release/update.img.squashfs && \
+            rar a /builder/dc-a588.git/release/update.img.rar update.img
+
+          # release images
           mv /builder/dc-a588.git/rockdev/boot.img             /builder/dc-a588.git/tools/RKDevTool/rockdev/image/
           mv /builder/dc-a588.git/rockdev/MiniLoaderAll.bin    /builder/dc-a588.git/tools/RKDevTool/rockdev/image/
           mv /builder/dc-a588.git/rockdev/modules.tar.gz       /builder/dc-a588.git/tools/RKDevTool/rockdev/image/
