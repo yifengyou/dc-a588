@@ -6,7 +6,7 @@ uboot:
 
 kernel:
 	cd kernel-5.10 && ./dc-a588.sh
-	cd tools && ./pack.sh
+	# cd tools && ./pack.sh
 
 ko:
 	ls -alh rockdev/modules/*.ko
