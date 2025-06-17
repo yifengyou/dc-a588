@@ -41,7 +41,7 @@ jobs:
           sudo rm -f /swapfile /mnt/swapfile
           sudo -E apt-get -y update
           sudo -E apt-get -y purge azure-cli ghc* zulu* llvm* firefox google* dotnet* powershell openjdk* mongodb* moby* || true
-          sudo -E apt-get -y install python2 python2-dev python-is-python3 squashfs-tools $(curl -fsSL https://tinyurl.com/ubuntu2204-build-armbian)
+          sudo -E apt-get -y install python2 python2-dev python-is-python3 squashfs-tools rar $(curl -fsSL https://tinyurl.com/ubuntu2204-build-armbian)
           sudo -E systemctl daemon-reload
           #sudo -E apt-get -y full-upgrade
           sudo -E apt-get -y autoremove --purge
@@ -179,9 +179,10 @@ jobs:
           mv /builder/dc-a588.git/rockdev/recovery.img         /builder/dc-a588.git/tools/RKDevTool/rockdev/image/
           mv /builder/dc-a588.git/rockdev/oem.img              /builder/dc-a588.git/tools/RKDevTool/rockdev/image/
 
-          # release rockdev.squashfs
+          # release rockdev.squashfs and rockdev.rar
           cd /builder/dc-a588.git/tools/ && \
-            mksquashfs  RKDevTool  /builder/dc-a588.git/release/rockdev.squashfs
+            mksquashfs  RKDevTool  /builder/dc-a588.git/release/rockdev.squashfs && \
+            rar a /builder/dc-a588.git/release/rockdev.rar RKDevTool
 
           # release Armbian files
           mv /builder/armbian.git/output/images/Armbian* /builder/dc-a588.git/release
@@ -197,9 +198,10 @@ jobs:
           mv /builder/dc-a588.git/tools/RKDevTool/rockdev/image/recovery.img         /builder/dc-a588.git/release/
           mv /builder/dc-a588.git/tools/RKDevTool/rockdev/image/oem.img              /builder/dc-a588.git/release/
 
-          # release rootfs.img.squashfs
+          # release rootfs.img.squashfs and rootfs.img.rar
           cd /builder/dc-a588.git/tools/RKDevTool/rockdev/image/ && \
-            mksquashfs rootfs.img  /builder/dc-a588.git/release/rootfs.img.squashfs
+            mksquashfs rootfs.img  /builder/dc-a588.git/release/rootfs.img.squashfs && \
+            rar a /builder/dc-a588.git/release/rootfs.img.rar rootfs.img
 
           # show all files
           ls -alh /builder/dc-a588.git/release/

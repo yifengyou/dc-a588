@@ -1,23 +1,22 @@
 #!/bin/bash
-pause()
-{
-echo "Press any key to quit:"
-read -n1 -s key
-exit 1
-}
+
+set -xe
+
+if [ $# -ne 1 ] ; then
+	echo "Usage: $0 update.img"
+	exit 1
+fi
+
 echo "start to unpack update.img..."
-if [ ! -d "output" ]; then
-	mkdir output
+mkdir -p output
+if [ ! -f "$1" ]; then
+	echo "Error:Not valid file $1"
+	exit 1
 fi
-if [ ! -f "update.img" ]; then
-	echo "Error:No found update.img!"
-	pause
-fi
-./rkImageMaker -unpack update.img output || pause
-./afptool -unpack output/firmware.img output || pause
-#rm -f output/firmware.img
-#rm -f output/boot.bin
-echo "Unpacking update.img OK."
-echo "Press any key to quit:"
-read -n1 -s key
-exit 0
+
+rkImageMaker -unpack "$1" output
+afptool -unpack output/firmware.img output
+
+ls -alh
+echo "All done!"
+
