@@ -1,0 +1,2 @@
+PM=0
+dhd_slpauto=0

@@ -1,0 +1,6 @@
+#!/bin/bash
+
+sudo resize2fs  /dev/mmcblk0p7
+
+sudo insmod /vendor/bcmdhd.ko
+
