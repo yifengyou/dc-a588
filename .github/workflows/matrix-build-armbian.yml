@@ -162,7 +162,7 @@ jobs:
           # add vendor
           sudo cp -a /builder/dc-a588.git/vendor /mnt/
           # add rc.local
-          sudo bash -c 'cat /mnt/vendor/rc.local /mnt/etc/rc.local'
+          sudo bash -c 'cat /mnt/vendor/rc.local > /mnt/etc/rc.local'
           sudo chmod +x /mnt/etc/rc.local
           # add modules
           sudo cp -a /builder/dc-a588.git/rockdev/modules/* /mnt/vendor/
