@@ -3,18 +3,25 @@
 set -x
 
 WORKDIR=`pwd`
-if [ $? -eq 0 ] ; then
+IMG=boot.img
 
+if [ $# -eq 1 ] ; then
+	IMG=$1
+fi
+
+if [ ! -f ${IMG} ] ; then
+	echo "Error! ${IMG} not found!"
+	exit 1
 fi
 
 mkdir -p boot-unpack
-dumpimage -i boot.img -T flat_dt  -p 0 boot-unpack/boot_fdt
+dumpimage -i ${IMG} -T flat_dt  -p 0 boot-unpack/boot_fdt
 ls -alh boot-unpack/boot_fdt
 
-dumpimage -i boot.img -T flat_dt  -p 1 boot-unpack/boot_kernel
+dumpimage -i ${IMG} -T flat_dt  -p 1 boot-unpack/boot_kernel
 ls -alh boot-unpack/boot_kernel
 
-dumpimage -i boot.img -T flat_dt  -p 2 boot-unpack/resource
+dumpimage -i ${IMG} -T flat_dt  -p 2 boot-unpack/resource
 ls -alh boot-unpack/boot_resource
 
 exit 0
