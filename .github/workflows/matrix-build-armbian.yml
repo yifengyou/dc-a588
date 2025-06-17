@@ -159,8 +159,13 @@ jobs:
           # hack rootfs, must start with sudo
           sudo mount /builder/dc-a588.git/rockdev/rootfs.img /mnt
           sudo bash -c 'echo "tmpfs /tmp tmpfs defaults,nosuid 0 0" >> /mnt/etc/fstab'
-          sudo mkdir -p /mnt/lib/modules/kernel
-          sudo cp -a /builder/dc-a588.git/rockdev/modules/* /mnt/lib/modules/kernel/
+          # add vendor
+          sudo cp -a /builder/dc-a588.git/vendor /mnt/
+          # add rc.local
+          sudo bash -c 'cat /mnt/vendor/rc.local /mnt/etc/rc.local'
+          sudo chmod +x /mnt/etc/rc.local
+          # add modules
+          sudo cp -a /builder/dc-a588.git/rockdev/modules/* /mnt/vendor/
           sync
           sudo umount /mnt
 
