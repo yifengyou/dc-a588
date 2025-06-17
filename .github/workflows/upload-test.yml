@@ -43,10 +43,13 @@ jobs:
           token: ${{ secrets.GITHUB_TOKEN }}
           body: |
             ### Action upload test
-            This is just test
-            - upload cpuinfo
+            This is just test(这是一个测试)
+            - upload cpuinfo(获取构建环境的CPU信息)
               * /proc/cpuinfo
-            - upload meminfo
+            - upload meminfo(获取构建环境的内存信息)
               * /proc/meminfo
-            - upload release
+            - upload release(上传发布信息)
               * ```uname -a > /tmp/builder/kernel.txt```
+            - 测试链接
+              * [baidu](https://www.baidu.com "百度搜索")
+              * [taobao](https://www.taobao.com "淘宝")
