@@ -112,6 +112,7 @@ jobs:
           # BRANCH=edge    : newest kernel such as 6.10
           # BRANCH=current : stable kernel such as 6.6
           # BRANCH=legacy  : vendor kernel rockchip 5.10
+          export KERNELBRANCH="commit:e03ced99c437f4a7992b8fa3d97d598f55453fd0"
           ./compile.sh RELEASE=${{ matrix.set_release }} \
                        BOARD=nanopct6 \
                        BRANCH=current\
