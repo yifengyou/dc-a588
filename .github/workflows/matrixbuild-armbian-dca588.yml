@@ -54,21 +54,9 @@ jobs:
           sudo timedatectl set-timezone "${TZ}"
           echo "status=success" >> ${GITHUB_OUTPUT}
 
-      - name: Create simulated physical disk
+      - name: Create build directory
         run: |
-          mnt_size=$(expr $(df -h /mnt | tail -1 | awk '{print $4}' | sed 's/[[:alpha:]]//g' | sed 's/\..*//') - 1)
-          root_size=$(expr $(df -h / | tail -1 | awk '{print $4}' | sed 's/[[:alpha:]]//g' | sed 's/\..*//') - 4)
-          sudo truncate -s "${mnt_size}"G /mnt/mnt.img
-          sudo truncate -s "${root_size}"G /root.img
-          sudo losetup /dev/loop6 /mnt/mnt.img
-          sudo losetup /dev/loop7 /root.img
-          sudo pvcreate -ff /dev/loop6
-          sudo pvcreate -ff /dev/loop7
-          sudo vgcreate -f github /dev/loop6 /dev/loop7
-          sudo lvcreate -n runner -l 100%FREE github
-          sudo mkfs.xfs /dev/github/runner
           sudo mkdir -p /builder
-          sudo mount /dev/github/runner /builder
           sudo chown -R runner.runner /builder
           df -Th
 
@@ -98,7 +86,7 @@ jobs:
         if: ${{ steps.compile_d3588.outputs.status }} == 'success' && !cancelled()
         run: |
           df -hT ${PWD}
-          git clone -q --single-branch --depth=1 --branch=main https://github.com/armbian/build.git armbian.git
+          git clone -q --single-branch --depth=1 --branch=v25.8.0-trunk.230 https://github.com/armbian/build.git armbian.git
           echo "status=success" >> ${GITHUB_OUTPUT}
 
       - name: Compile Armbian [ ${{ matrix.set_release }} ] [ ${{ matrix.set_desktop }} ]
