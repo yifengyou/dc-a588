@@ -197,16 +197,6 @@ jobs:
           # release Armbian files
           mv /builder/armbian.git/output/images/Armbian* /builder/dc-a588.git/release
 
-#          mv /builder/dc-a588.git/tools/RKDevTool/rockdev/image/boot.img             /builder/dc-a588.git/release/
-#          mv /builder/dc-a588.git/tools/RKDevTool/rockdev/image/MiniLoaderAll.bin    /builder/dc-a588.git/release/
-#          mv /builder/dc-a588.git/tools/RKDevTool/rockdev/image/modules.tar.gz       /builder/dc-a588.git/release/
-#          mv /builder/dc-a588.git/tools/RKDevTool/rockdev/image/parameter.txt        /builder/dc-a588.git/release/
-#          mv /builder/dc-a588.git/tools/RKDevTool/rockdev/image/uboot.img            /builder/dc-a588.git/release/
-#          mv /builder/dc-a588.git/tools/RKDevTool/rockdev/image/misc.img             /builder/dc-a588.git/release/
-#          mv /builder/dc-a588.git/tools/RKDevTool/rockdev/image/package-file         /builder/dc-a588.git/release/
-#          mv /builder/dc-a588.git/tools/RKDevTool/rockdev/image/recovery.img         /builder/dc-a588.git/release/
-#          mv /builder/dc-a588.git/tools/RKDevTool/rockdev/image/oem.img              /builder/dc-a588.git/release/
-
           # generate rootfs.img
           cd /builder/dc-a588.git/tools/RKDevTool/rockdev/image/ && \
             mksquashfs rootfs.img  /builder/dc-a588.git/release/Armbian_DC-A588_${{ matrix.set_release }}_${{ matrix.set_desktop }}_rootfs.img.squashfs && \
