@@ -85,8 +85,14 @@ jobs:
         working-directory: /builder/
         if: ${{ steps.compile_d3588.outputs.status }} == 'success' && !cancelled()
         run: |
-          df -hT ${PWD}
-          git clone -q --single-branch --depth=1 --branch=v25.8.0-trunk.230 https://github.com/armbian/build.git armbian.git
+          set -x
+          df -hT ${PWD}15407330c
+          git clone -q --single-branch \
+            --depth=1 \
+            --branch=main \
+            https://github.com/armbian/build.git armbian.git
+          # v25.8.0-trunk.230
+          cd armbian.git && git checkout 15407330c61b82cbb2f1da6bc289672ac23ba69c
           echo "status=success" >> ${GITHUB_OUTPUT}
 
       - name: Compile Armbian [ ${{ matrix.set_release }} ] [ ${{ matrix.set_desktop }} ]
@@ -94,9 +100,6 @@ jobs:
         working-directory: /builder/armbian.git
         if: ${{ steps.down_armbian.outputs.status }} == 'success' && !cancelled()
         run: |
-          # set up build tag
-          echo "build_tag=Armbian_DC-A588_${{ matrix.set_release }}_${{ matrix.set_desktop }}" >> ${GITHUB_OUTPUT}
-
           if [ "${{ matrix.set_desktop }}" == "cli" ] ; then
             BUILD_DESKTOP="BUILD_DESKTOP=no"
           else
@@ -209,6 +212,7 @@ jobs:
             ### 定昌DC-A588开发板Armbian构建输出(Armbian Image for DC-A588 information)
             - 默认用户名(Default username): root
             - 默认密码(Default password): 123
+
             ### rockdev构建输出(rockdev.squashfs/rockdev.rar)
 
             ```
