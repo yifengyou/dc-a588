@@ -109,7 +109,7 @@ jobs:
           df -hT ${PWD}
           git clone -q --single-branch --depth=1 --branch=main https://github.com/armbian/build.git armbian.git
           # v25.8.0-trunk.230
-          cd armbian.git && git checkout 15407330c61b82cbb2f1da6bc289672ac23ba69c
+          cd armbian.git && git checkout v25.8.0-trunk.230
           echo "status=success" >> ${GITHUB_OUTPUT}
 
       - name: Compile Armbian [ ${{ inputs.set_release }} ] [ ${{ inputs.set_desktop }} ]
