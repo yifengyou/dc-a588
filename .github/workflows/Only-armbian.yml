@@ -108,6 +108,8 @@ jobs:
         run: |
           df -hT ${PWD}
           git clone -q --single-branch --depth=1 --branch=main https://github.com/armbian/build.git armbian.git
+          # v25.8.0-trunk.230
+          cd armbian.git && git checkout 15407330c61b82cbb2f1da6bc289672ac23ba69c
           echo "status=success" >> ${GITHUB_OUTPUT}
 
       - name: Compile Armbian [ ${{ inputs.set_release }} ] [ ${{ inputs.set_desktop }} ]
@@ -131,6 +133,7 @@ jobs:
           # BRANCH=edge    : newest kernel such as 6.10
           # BRANCH=current : stable kernel such as 6.6
           # BRANCH=legacy  : vendor kernel rockchip 5.10
+          export KERNELBRANCH="commit:e03ced99c437f4a7992b8fa3d97d598f55453fd0"
           ./compile.sh RELEASE=${{ inputs.set_release }} \
                        BOARD=${{ inputs.set_board }} \
                        BRANCH=${{ inputs.set_branch }}\
