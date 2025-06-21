@@ -107,9 +107,12 @@ jobs:
         if: ${{ steps.init.outputs.status }} == 'success' && !cancelled()
         run: |
           df -hT ${PWD}
-          git clone -q --single-branch --depth=1 --branch=main https://github.com/armbian/build.git armbian.git
+          git clone -q --single-branch --depth=1 --branch v25.8.0-trunk.230 https://github.com/armbian/build.git armbian.git
           # v25.8.0-trunk.230
-          cd armbian.git && git checkout v25.8.0-trunk.230
+          cd armbian.git
+          ls -alh
+          git status
+          git log HEAD -n1
           echo "status=success" >> ${GITHUB_OUTPUT}
 
       - name: Compile Armbian [ ${{ inputs.set_release }} ] [ ${{ inputs.set_desktop }} ]
