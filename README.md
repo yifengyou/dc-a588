@@ -91,10 +91,30 @@ Bug report, questions and discussion are welcome, you can post an issue or pull 
 ## 定昌官方B站信息
 
 * <https://space.bilibili.com/514513449>
+* <http://wikicn.gzdcsmt.com/wendang_id_47.html#son0>
 
 ![](./images/38169628338700.png)
 
 ![](./images/38243392671600.png)
+
+
+硬件篇：
+08.定昌电子板卡初步上手使用简介QuickStart_08 - 定昌电子_Ubuntu系列视频教程：
+* <https://www.bilibili.com/video/BV1DL5TzxEJU/?vd_source=514bc9d60fa0f0ca505828c20aaa3d42>
+
+软件篇：
+09.定昌电子板卡初步上手使用简介QuickStart_软件篇_09 - 定昌电子_Ubuntu系列视频教程：
+* <https://www.bilibili.com/video/BV1Qn53zBEvz/?vd_source=514bc9d60fa0f0ca505828c20aaa3d42>
+
+```text
+板端Ubuntu系统：
+板端超级用户名:root 密码：123456
+普通用户名：ztl 密码：123456
+板端银河麒麟系统：
+账号：kylin
+密码：ztl123456
+```
+
 
 
 
