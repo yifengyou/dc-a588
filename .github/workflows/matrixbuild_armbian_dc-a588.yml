@@ -168,6 +168,10 @@ jobs:
           cd /builder/dc-a588.git/tools/ && \
             mksquashfs RKDevTool  /builder/dc-a588.git/release/Armbian_DC-A588_${{ matrix.set_release }}_${{ matrix.set_desktop }}_update.img.squashfs && \
             rar a /builder/dc-a588.git/release/Armbian_DC-A588_${{ matrix.set_release }}_${{ matrix.set_desktop }}_update.img.rar RKDevTool
+          sha256sum /builder/dc-a588.git/release/Armbian_DC-A588_${{ matrix.set_release }}_${{ matrix.set_desktop }}_update.img.squashfs > \
+            /builder/dc-a588.git/release/Armbian_DC-A588_${{ matrix.set_release }}_${{ matrix.set_desktop }}_update.img.squashfs.sha256
+          sha256sum /builder/dc-a588.git/release/Armbian_DC-A588_${{ matrix.set_release }}_${{ matrix.set_desktop }}_update.img.rar > \
+            /builder/dc-a588.git/release/Armbian_DC-A588_${{ matrix.set_release }}_${{ matrix.set_desktop }}_update.img.rar.sha256
 
           # generate rockdev image
           rm -f /builder/dc-a588.git/tools/RKDevTool/rockdev/image/update.img
@@ -184,6 +188,10 @@ jobs:
           cd /builder/dc-a588.git/tools/ && \
             mksquashfs  RKDevTool  /builder/dc-a588.git/release/Armbian_DC-A588_${{ matrix.set_release }}_${{ matrix.set_desktop }}_rockdev.squashfs && \
             rar a /builder/dc-a588.git/release/Armbian_DC-A588_${{ matrix.set_release }}_${{ matrix.set_desktop }}_rockdev.rar RKDevTool
+          sha256sum /builder/dc-a588.git/release/Armbian_DC-A588_${{ matrix.set_release }}_${{ matrix.set_desktop }}_rockdev.squashfs > \
+            /builder/dc-a588.git/release/Armbian_DC-A588_${{ matrix.set_release }}_${{ matrix.set_desktop }}_rockdev.squashfs.sha256
+          sha256sum /builder/dc-a588.git/release/Armbian_DC-A588_${{ matrix.set_release }}_${{ matrix.set_desktop }}_rockdev.rar > \
+            /builder/dc-a588.git/release/Armbian_DC-A588_${{ matrix.set_release }}_${{ matrix.set_desktop }}_rockdev.rar.sha256
 
           # release Armbian files
           # mv /builder/armbian.git/output/images/Armbian* /builder/dc-a588.git/release
@@ -192,6 +200,10 @@ jobs:
           cd /builder/dc-a588.git/tools/RKDevTool/rockdev/image/ && \
             mksquashfs rootfs.img  /builder/dc-a588.git/release/Armbian_DC-A588_${{ matrix.set_release }}_${{ matrix.set_desktop }}_rootfs.img.squashfs && \
             rar a /builder/dc-a588.git/release/Armbian_DC-A588_${{ matrix.set_release }}_${{ matrix.set_desktop }}_rootfs.img.rar rootfs.img
+          sha256sum /builder/dc-a588.git/release/Armbian_DC-A588_${{ matrix.set_release }}_${{ matrix.set_desktop }}_rootfs.img.squashfs > \
+            /builder/dc-a588.git/release/Armbian_DC-A588_${{ matrix.set_release }}_${{ matrix.set_desktop }}_rootfs.img.squashfs.sha256
+          sha256sum /builder/dc-a588.git/release/Armbian_DC-A588_${{ matrix.set_release }}_${{ matrix.set_desktop }}_rootfs.img.rar > \
+            /builder/dc-a588.git/release/Armbian_DC-A588_${{ matrix.set_release }}_${{ matrix.set_desktop }}_rootfs.img.rar.sha256
 
           # show all files
           ls -alh /builder/dc-a588.git/release/
