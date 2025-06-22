@@ -161,14 +161,16 @@ jobs:
           chmod +x /builder/dc-a588.git/tools/rkImageMaker
           cd /builder/dc-a588.git/rockdev && \
               /builder/dc-a588.git/tools/afptool -pack . temp.img && \
-              /builder/dc-a588.git/tools/rkImageMaker -RK3588 MiniLoaderAll.bin temp.img update.img -os_type:androidos
+              /builder/dc-a588.git/tools/rkImageMaker -RK3588 MiniLoaderAll.bin temp.img \
+              /builder/dc-a588.git/tools/RKDevTool/rockdev/image/update.img -os_type:androidos
 
           # generate update.img
-          cd /builder/dc-a588.git/rockdev && \
-            mksquashfs update.img  /builder/dc-a588.git/release/Armbian_DC-A588_${{ matrix.set_release }}_${{ matrix.set_desktop }}_update.img.squashfs && \
-            rar a /builder/dc-a588.git/release/Armbian_DC-A588_${{ matrix.set_release }}_${{ matrix.set_desktop }}_update.img.rar update.img
+          cd /builder/dc-a588.git/tools/ && \
+            mksquashfs RKDevTool  /builder/dc-a588.git/release/Armbian_DC-A588_${{ matrix.set_release }}_${{ matrix.set_desktop }}_update.img.squashfs && \
+            rar a /builder/dc-a588.git/release/Armbian_DC-A588_${{ matrix.set_release }}_${{ matrix.set_desktop }}_update.img.rar RKDevTool
 
           # generate rockdev image
+          rm -f /builder/dc-a588.git/tools/RKDevTool/rockdev/image/update.img
           mv /builder/dc-a588.git/rockdev/boot.img             /builder/dc-a588.git/tools/RKDevTool/rockdev/image/
           mv /builder/dc-a588.git/rockdev/MiniLoaderAll.bin    /builder/dc-a588.git/tools/RKDevTool/rockdev/image/
           mv /builder/dc-a588.git/rockdev/modules.tar.gz       /builder/dc-a588.git/tools/RKDevTool/rockdev/image/
@@ -184,7 +186,7 @@ jobs:
             rar a /builder/dc-a588.git/release/Armbian_DC-A588_${{ matrix.set_release }}_${{ matrix.set_desktop }}_rockdev.rar RKDevTool
 
           # release Armbian files
-          mv /builder/armbian.git/output/images/Armbian* /builder/dc-a588.git/release
+          # mv /builder/armbian.git/output/images/Armbian* /builder/dc-a588.git/release
 
           # generate rootfs.img
           cd /builder/dc-a588.git/tools/RKDevTool/rockdev/image/ && \
@@ -212,6 +214,8 @@ jobs:
             - 默认密码(Default password): 123
 
             ### rockdev构建输出(rockdev.squashfs/rockdev.rar)
+
+            带windows更新工具RKDevTool，开箱即用。包含以下目录结构，windows下载后解压，执行RKDevTool.exe即可。
 
             ```
             RKDevTool/
@@ -243,13 +247,33 @@ jobs:
 
             ### update镜像构建输出(update.img.squashfs/update.img.rar)
 
-            解压后输出update.img镜像，请使用 RKDevTool 固件更新
+            解压后输出update.img镜像，请使用 RKDevTool.exe 固件更新
+
+            ```
+            RKDevTool/
+            ├── bin
+            │         ├── adb.exe
+            │         ├── AdbWinApi.dll
+            │         ├── AdbWinUsbApi.dll
+            │         ├── AFPTool.exe
+            │         └── RKImageMaker.exe
+            ├── config.cfg
+            ├── config.ini
+            ├── Language
+            │         ├── Chinese.ini
+            │         └── English.ini
+            ├── RKDevTool.exe
+            └── rockdev
+                └── image
+                    └── update.img
+            ```
 
             ### 根文件镜像地址(rootfs.img.squashfs/rootfs.img.rar)
 
             仅包含发行版更文件系统(only rootfs.img with squashfs archive)
 
-            ### 其他镜像(Other image)
+            ### 相关镜像信息(Image Information)
+
             - MiniLoaderAll.bin
             - misc.img
             - oem.img
