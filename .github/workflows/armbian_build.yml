@@ -1,8 +1,8 @@
 #==========================================================================
-# Description: Only Build Armbian
+# Description: Armbian Build 
 #==========================================================================
 
-name: Only Build Armbian
+name: Armbian Build
 
 on:
   repository_dispatch:
