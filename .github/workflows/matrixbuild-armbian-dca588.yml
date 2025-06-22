@@ -86,13 +86,11 @@ jobs:
         if: ${{ steps.compile_d3588.outputs.status }} == 'success' && !cancelled()
         run: |
           set -x
-          df -hT ${PWD}15407330c
           git clone -q --single-branch \
             --depth=1 \
             --branch=main \
             https://github.com/armbian/build.git armbian.git
-          # v25.8.0-trunk.230
-          cd armbian.git && git checkout 15407330c61b82cbb2f1da6bc289672ac23ba69c
+          ls -alh armbian.git
           echo "status=success" >> ${GITHUB_OUTPUT}
 
       - name: Compile Armbian [ ${{ matrix.set_release }} ] [ ${{ matrix.set_desktop }} ]
@@ -112,7 +110,6 @@ jobs:
           # BRANCH=edge    : newest kernel such as 6.10
           # BRANCH=current : stable kernel such as 6.6
           # BRANCH=legacy  : vendor kernel rockchip 5.10
-          export KERNELBRANCH="commit:e03ced99c437f4a7992b8fa3d97d598f55453fd0"
           ./compile.sh RELEASE=${{ matrix.set_release }} \
                        BOARD=nanopct6 \
                        BRANCH=current\
