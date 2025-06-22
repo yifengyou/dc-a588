@@ -10,6 +10,7 @@ Bug report, questions and discussion are welcome, you can post an issue or pull 
 
 * 定昌官网介绍页面: <https://www.gzdcsmt.com/sys-pd/166.html>
 * 定昌官网WIKI: <http://wikicn.gzdcsmt.com/wendang_id_8.html>
+* 定昌官方B站: <https://space.bilibili.com/514513449/upload/video>
 
 ## 开发板信息
 
@@ -71,7 +72,13 @@ Bug report, questions and discussion are welcome, you can post an issue or pull 
 
 ![](./images/36048105672800.png)
 
-* 外壳购买方式，扫描上图二维码，跳转闲鱼购买
+* 外壳购买方式: 扫描上图二维码，跳转闲鱼购买
+    - 高透亚克力材质
+    - 支持2.5寸硬盘，预留孔位
+    - 支持6cm散热风扇，预留孔位(**主动散热比铁壳散热效果好**)
+    - 外壳厚度5mm
+    - 带m3铜柱，结实稳固
+    - 预留ttl串口调试线孔位
 
 ## 固件获取及刷机方式
 
@@ -81,9 +88,17 @@ Bug report, questions and discussion are welcome, you can post an issue or pull 
 
 
 
+## 定昌官方B站信息
+
+* <https://space.bilibili.com/514513449>
+
+![](./images/38169628338700.png)
+
+![](./images/38243392671600.png)
 
 
 
+---
 
 
 
