@@ -115,6 +115,10 @@ Bug report, questions and discussion are welcome, you can post an issue or pull 
 密码：ztl123456
 ```
 
+![](./images/40287608398600.png)
+
+玩耍必备TTL调试，推荐 **CH340调试串口模块**
+
 
 
 
