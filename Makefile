@@ -6,7 +6,11 @@ uboot:
 
 kernel:
 	cd kernel-5.10 && ./dc-a588.sh
-	# cd tools && ./pack.sh
+
+release:
+	mkdir -p rockdev
+	cp -a uboot/output/uboot.img rockdev/
+	cp -a kernel/output/boot.img rockdev/
 
 ko:
 	ls -alh rockdev/modules/*.ko
