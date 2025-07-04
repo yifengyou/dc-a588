@@ -1,9 +1,15 @@
-[submodule "kernel-5.10"]
-	path = kernel-5.10
-	url = https://github.com/yifengyou/dc-a588-kernel
+[submodule "kernel-5.10.226"]
+	path = kernel-5.10.226
+	url = https://github.com/yifengyou/dc-a588-kernel-5.10.226
 	branch = master
 [submodule "u-boot-v2017"]
 	path = u-boot-v2017
 	url = https://github.com/yifengyou/dc-a588-uboot
 	branch = master
 
+[submodule "kernel-5.10.110"]
+	path = kernel-5.10.110
+	url = git@github.com:yifengyou/dc-a588-kernel-5.10.110.git
+[submodule "kernel-6.1.115"]
+	path = kernel-6.1.115
+	url = git@github.com:yifengyou/dc-a588-kernel-6.1.115.git

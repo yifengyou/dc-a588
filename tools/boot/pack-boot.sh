@@ -2,6 +2,14 @@
 
 set -x
 
+
+mkbootimg --kernel Image --second second -o boot.img
+ls -alh boot.img
+binwalk boot.img
+
+
+exit 0
+
 TIMESTAMP=`date +"%Y%m%d%H%M%S"`
 cp Image ok_boot_kernel -a
 mkdir ../rockdev
