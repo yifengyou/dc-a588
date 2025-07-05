@@ -1,8 +1,8 @@
 #==========================================================================
-# Description: MatrixBuild Armbian DC-A588 Image With Kernel 5.10.226
+# Description: MatribBuild Image (kver 5.10.226)
 #==========================================================================
 
-name: MatrixBuild Armbian DC-A588 Image With Kernel 5.10.226
+name: MatribBuild Image (kver 5.10.226)
 
 on:
   repository_dispatch:
