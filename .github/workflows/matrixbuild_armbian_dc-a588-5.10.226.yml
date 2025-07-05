@@ -1,8 +1,8 @@
 #==========================================================================
-# Description: MatrixBuild Armbian DC-A588 Image
+# Description: MatrixBuild Armbian DC-A588 Image With Kernel 5.10.226
 #==========================================================================
 
-name: MatrixBuild Armbian DC-A588 Image
+name: MatrixBuild Armbian DC-A588 Image With Kernel 5.10.226
 
 on:
   repository_dispatch:
