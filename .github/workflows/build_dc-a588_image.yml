@@ -1,0 +1,292 @@
+#==========================================================================
+# Description: Build Image For DC-A588
+#==========================================================================
+
+name: Build Image For DC-A588
+
+on:
+  repository_dispatch:
+  workflow_dispatch:
+    inputs:
+      set_template:
+        description: "Select template"
+        required: false
+        default: "GB_A588_ubuntu22.04.5_20250517_180656_xfce4-v01"
+        type: choice
+        options:
+          - GB_A588_ubuntu22.04.5_20250517_180656_xfce4-v01
+          - A588_ubuntu20.04_20230202-135921_V1.0
+          - GB-RK3588-ubuntu20.04-20250610-105959-V1.38-ALL-A-CM
+          - rk3588_linux_openSdk
+      set_release:
+        description: "Select OS Release."
+        required: false
+        default: "noble"
+        type: choice
+        options:
+          - jammy
+          - noble
+          - bookworm
+          - bullseye
+      set_kernel:
+        description: "Select kernel version"
+        required: false
+        default: "5.10.226"
+        type: choice
+        options:
+          - 5.10.110
+          - 5.10.226
+          - 6.1.115
+      set_desktop:
+        description: "Set desktop type"
+        required: false
+        default: "cli"
+        type: choice
+        options:
+          - cli
+          - xfce
+          - gnome
+
+env:
+  TZ: America/New_York
+
+jobs:
+  build:
+    runs-on: ubuntu-22.04
+    if: ${{ github.event.repository.owner.id }} == ${{ github.event.sender.id }}
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Initialization environment
+        id: init
+        env:
+          DEBIAN_FRONTEND: noninteractive
+        run: |
+          docker rmi $(docker images -q) 2>/dev/null
+          [[ -n "${AGENT_TOOLSDIRECTORY}" ]] && sudo rm -rf "${AGENT_TOOLSDIRECTORY}"
+          sudo rm -rf /usr/share/dotnet /etc/apt/sources.list.d /usr/local/lib/android 2>/dev/null
+          sudo swapoff -a
+          sudo rm -f /swapfile /mnt/swapfile
+          sudo -E apt-get -y update
+          sudo -E apt-get -y purge azure-cli ghc* zulu* llvm* firefox google* dotnet* powershell openjdk* mongodb* moby* || true
+          sudo -E apt-get -y install python2 python2-dev python-is-python3 $(curl -fsSL https://tinyurl.com/ubuntu2204-build-armbian)
+          sudo -E systemctl daemon-reload
+          #sudo -E apt-get -y full-upgrade
+          sudo -E apt-get -y autoremove --purge
+          sudo -E apt-get clean
+          sudo sed -i '/NVM_DIR/d;/skel/d' /root/{.bashrc,.profile}
+          sudo rm -rf ~/{.cargo,.dotnet,.rustup}
+          sudo timedatectl set-timezone "${TZ}"
+          echo "status=success" >> ${GITHUB_OUTPUT}
+
+      - name: Create simulated physical disk
+        run: |
+          mnt_size=$(expr $(df -h /mnt | tail -1 | awk '{print $4}' | sed 's/[[:alpha:]]//g' | sed 's/\..*//') - 1)
+          root_size=$(expr $(df -h / | tail -1 | awk '{print $4}' | sed 's/[[:alpha:]]//g' | sed 's/\..*//') - 4)
+          sudo truncate -s "${mnt_size}"G /mnt/mnt.img
+          sudo truncate -s "${root_size}"G /root.img
+          sudo losetup /dev/loop6 /mnt/mnt.img
+          sudo losetup /dev/loop7 /root.img
+          sudo pvcreate /dev/loop6
+          sudo pvcreate /dev/loop7
+          sudo vgcreate github /dev/loop6 /dev/loop7
+          sudo lvcreate -n runner -l 100%FREE github
+          sudo mkfs.xfs /dev/github/runner
+          sudo mkdir -p /builder
+          sudo mount /dev/github/runner /builder
+          sudo chown -R runner.runner /builder
+          df -Th
+
+      - name: Download Git Repository
+        id: down_d3588
+        working-directory: /builder/
+        if: ${{ steps.init.outputs.status }} == 'success' && !cancelled()
+        run: |
+          df -hT ${PWD}
+          git clone --recursive --single-branch --branch=master https://github.com/yifengyou/dc-a588.git dc-a588.git
+          echo "status=success" >> ${GITHUB_OUTPUT}
+
+      - name: Copy template
+        id: copy_template
+        working-directory: /builder/dc-a588.git/
+        if: ${{ steps.down_d3588.outputs.status }} == 'success' && !cancelled()
+        run: |
+          cp -a template/${{ inputs.set_template }} /builder/dc-a588.git/ouput-temp
+          echo "status=success" >> ${GITHUB_OUTPUT}
+
+      - name: Compile u-boot-v2017 for DC-A588
+        id: compile_d3588_uboot
+        working-directory: /builder/dc-a588.git/u-boot-v2017
+        if: ${{ steps.copy_template.outputs.status }} == 'success' && !cancelled()
+        run: |
+          ./dc-a588.sh
+          ls -alh output
+          echo "status=success" >> ${GITHUB_OUTPUT}
+
+      - name: Compile Kernel for DC-A588
+        id: compile_d3588_kernel
+        working-directory: /builder/dc-a588.git
+        if: ${{ steps.compile_d3588_uboot.outputs.status }} == 'success' && !cancelled()
+        run: |
+          cd kernel-${{ inputs.set_kernel }}
+          ./dc-a588.sh
+          ls -alh output
+          echo "status=success" >> ${GITHUB_OUTPUT}
+
+      - name: Download armbian source code
+        id: down_armbian
+        working-directory: /builder/
+        if: ${{ steps.compile_d3588_kernel.outputs.status }} == 'success' && !cancelled()
+        run: |
+          set -x
+          git clone -q --single-branch \
+            --depth=1 \
+            --branch=main \
+            https://github.com/armbian/build.git armbian.git
+          ls -alh armbian.git
+          echo "status=success" >> ${GITHUB_OUTPUT}
+
+      - name: Compile Armbian [ ${{ inputs.set_release }} ] [ ${{ inputs.set_desktop }} ]
+        id: compile_armbian
+        working-directory: /builder/armbian.git
+        if: ${{ steps.down_armbian.outputs.status }} == 'success' && !cancelled()
+        run: |
+          if [ "${{ inputs.set_desktop }}" == "cli" ] ; then
+            BUILD_DESKTOP="BUILD_DESKTOP=no"
+          else
+            BUILD_DESKTOP=" \
+                BUILD_DESKTOP=yes \
+                DESKTOP_APPGROUPS_SELECTED=remote_desktop \
+                DESKTOP_ENVIRONMENT=${{ inputs.set_desktop }} \
+                DESKTOP_ENVIRONMENT_CONFIG_NAME=config_base"
+          fi
+          # BRANCH=edge    : newest kernel such as 6.10
+          # BRANCH=current : stable kernel such as 6.6
+          # BRANCH=legacy  : vendor kernel rockchip 5.10
+          ./compile.sh RELEASE=${{ inputs.set_release }} \
+                       BOARD=nanopct6 \
+                       BRANCH=current\
+                       BUILD_MINIMAL=no \
+                       BUILD_ONLY=default \
+                       HOST=armbian \
+                       ${BUILD_DESKTOP} \
+                       EXPERT=yes \
+                       KERNEL_CONFIGURE=no \
+                       COMPRESS_OUTPUTIMAGE="sha,img,xz" \
+                       VENDOR="Armbian" \
+                       SHARE_LOG=yes
+          ls -alh /builder/armbian.git/output/images/
+          echo "status=success" >> ${GITHUB_OUTPUT}
+          
+      - name: Extract rootfs from Armbian
+        id: extract_rootfs
+        working-directory: /builder/dc-a588.git
+        if: ${{ steps.compile_armbian.outputs.status }} == 'success' && !cancelled()
+        run: |
+          chmod +x /builder/dc-a588.git/scripts/extract-rootfs-from-armbian.sh
+          /builder/dc-a588.git/extract-rootfs-from-armbian.sh /builder/armbian.git/output/images/
+          ls -alh /builder/armbian.git/output/images/rootfs.img
+          echo "status=success" >> ${GITHUB_OUTPUT}
+
+      - name: Hack rootfs
+        id: hack_rootfs
+        working-directory: /builder/armbian.git/output/images/
+        if: ${{ steps.extract_rootfs.outputs.status }} == 'success' && !cancelled()
+        run: |
+          # hack rootfs, must start with sudo
+          sudo mount rootfs.img /mnt
+          sudo bash -c 'echo "tmpfs /tmp tmpfs defaults,nosuid 0 0" >> /mnt/etc/fstab'
+          sync
+          sudo umount /mnt
+          mkdir -p /builder/dc-a588.git/release
+          mv /builder/armbian.git/output/images/rootfs.img /builder/dc-a588.git/ouput-temp/
+          echo "status=success" >> ${GITHUB_OUTPUT}
+
+      - name: Generate updatable image
+        id: generate_updateable_image
+        working-directory: /builder/dc-a588.git/
+        if: ${{ steps.hack_rootfs.outputs.status }} == 'success' && !cancelled()
+        run: |
+          # rootfs.img   : /builder/dc-a588.git/ouput-temp/rootfs.img
+          # uboot.img    : /builder/dc-a588.git/ouput-temp/uboot.img
+          # boot.img     : /builder/dc-a588.git/ouput-temp/boot.img
+          # RKDevTool    : /builder/dc-a588.git/tools/RKDevTool
+          # afptool      : /builder/dc-a588.git/tools/afptool
+          # rkImageMaker : /builder/dc-a588.git/tools/rkImageMaker
+          # template     : /builder/dc-a588.git/ouput-temp
+
+          mkdir -p /builder/dc-a588.git/release
+          mkdir -p /builder/dc-a588.git/output-updatable-image
+          # copy RKDevTool
+          cp -a /builder/dc-a588.git/tools/RKDevTool /builder/dc-a588.git/output-updatable-image/
+          mkdir -p /builder/dc-a588.git/output-updatable-image/RKDevTool/rockdev/image/
+          # copy template
+          cp -a  /builder/dc-a588.git/ouput-temp/* \
+            /builder/dc-a588.git/output-updatable-image/RKDevTool/rockdev/image/
+
+          chmod +x /builder/dc-a588.git/tools/afptool
+          chmod +x /builder/dc-a588.git/tools/rkImageMaker
+          cd /builder/dc-a588.git/output-updatable-image/RKDevTool/rockdev/image/
+          /builder/dc-a588.git/tools/afptool -pack . temp.img
+          /builder/dc-a588.git/tools/rkImageMaker -RK3588 MiniLoaderAll.bin temp.img update.img -os_type:androidos
+          find . -type f ! -name "update.img" -exec rm -f {} \;
+
+          # generate update.img
+          cd /builder/dc-a588.git/output-updatable-image/
+          OUTPUT_NAME=Armbian_DC-A588_${{ inputs.set_release }}_${{ inputs.set_kernel }}_${{ inputs.set_desktop }}
+          mksquashfs RKDevTool  /builder/dc-a588.git/release/${OUTPUT_NAME}_update.img.squashfs && \
+          rar a /builder/dc-a588.git/release/${OUTPUT_NAME}_update.img.rar RKDevTool
+          sha256sum /builder/dc-a588.git/release/${OUTPUT_NAME}_update.img.squashfs > \
+            /builder/dc-a588.git/release/${OUTPUT_NAME}_update.img.squashfs.sha256
+          sha256sum /builder/dc-a588.git/release/${OUTPUT_NAME}_update.img.rar > \
+            /builder/dc-a588.git/release/${OUTPUT_NAME}_update.img.rar.sha256
+
+      - name: Generate rockdev image
+        id: generate_rockdev_image
+        working-directory: /builder/dc-a588.git/release/RKDevTool/rockdev/image/
+        if: ${{ steps.generate_updateable_image.outputs.status }} == 'success' && !cancelled()
+        run: |
+          # rootfs.img   : /builder/dc-a588.git/ouput-temp/rootfs.img
+          # uboot.img    : /builder/dc-a588.git/ouput-temp/uboot.img
+          # boot.img     : /builder/dc-a588.git/ouput-temp/boot.img
+          # RKDevTool    : /builder/dc-a588.git/tools/RKDevTool
+          # afptool      : /builder/dc-a588.git/tools/afptool
+          # rkImageMaker : /builder/dc-a588.git/tools/rkImageMaker
+          # template     : /builder/dc-a588.git/ouput-temp
+
+          mkdir -p /builder/dc-a588.git/release
+          mkdir -p /builder/dc-a588.git/output-rockdev-image
+          # copy RKDevTool
+          cp -a /builder/dc-a588.git/tools/RKDevTool /builder/dc-a588.git/output-rockdev-image/
+          mkdir -p /builder/dc-a588.git/output-rockdev-image/RKDevTool/rockdev/image/
+          # copy template
+          cp -a  /builder/dc-a588.git/ouput-temp/* \
+            /builder/dc-a588.git/output-rockdev-image/RKDevTool/rockdev/image/
+
+          # generate rockdev.img
+          cd /builder/dc-a588.git/output-rockdev-image/
+          OUTPUT_NAME=Armbian_DC-A588_${{ inputs.set_release }}_${{ inputs.set_kernel }}_${{ inputs.set_desktop }}
+          mksquashfs RKDevTool  /builder/dc-a588.git/release/${OUTPUT_NAME}_rockdev.img.squashfs && \
+          rar a /builder/dc-a588.git/release/${OUTPUT_NAME}_rockdev.img.rar RKDevTool
+          sha256sum /builder/dc-a588.git/release/${OUTPUT_NAME}_rockdev.img.squashfs > \
+            /builder/dc-a588.git/release/${OUTPUT_NAME}_rockdev.img.squashfs.sha256
+          sha256sum /builder/dc-a588.git/release/${OUTPUT_NAME}_rockdev.img.rar > \
+            /builder/dc-a588.git/release/${OUTPUT_NAME}_rockdev.img.rar.sha256
+          echo "status=success" >> ${GITHUB_OUTPUT}
+
+      - name: Upload Image to Release
+        uses: ncipollo/release-action@main
+        if: ${{ steps.generate_rockdev_image.outputs.status }} == 'success' && !cancelled()
+        with:
+          tag: "Armbian DC-A588 Image"
+          artifacts: /builder/dc-a588.git/output
+          allowUpdates: true
+          removeArtifacts: false
+          replacesArtifacts: true
+          token: ${{ secrets.GITHUB_TOKEN }}
+          body: |
+            ### DC-A588 Image information
+            - Uboot version: U-Boot 2017.09-kdev
+            - Kernel version: 5.10.226-kdev SMP mod_unload aarch64

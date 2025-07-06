@@ -1,4 +1,5 @@
-template=None
-uboot=template
-kernel=kernel-5.10.110
+KDEV_TEMPLATE=templates/GB_A588_ubuntu22.04.5_20250517_180656_xfce4-v01
+KDEV_UBOOT=u-boot-v2017
+KDEV_KERNEL=kernel-6.1.115
+
 
