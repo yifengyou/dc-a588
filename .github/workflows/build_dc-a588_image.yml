@@ -186,7 +186,7 @@ jobs:
         if: ${{ steps.compile_armbian.outputs.status }} == 'success' && !cancelled()
         run: |
           chmod +x /builder/dc-a588.git/scripts/extract-rootfs-from-armbian.sh
-          /builder/dc-a588.git/extract-rootfs-from-armbian.sh /builder/armbian.git/output/images/
+          /builder/dc-a588.git/scripts/extract-rootfs-from-armbian.sh /builder/armbian.git/output/images/
           ls -alh /builder/armbian.git/output/images/rootfs.img
           echo "status=success" >> ${GITHUB_OUTPUT}
 
