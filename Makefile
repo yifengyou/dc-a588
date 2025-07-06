@@ -1,5 +1,5 @@
 
-all: uboot kernel ko
+all: uboot
 
 uboot:
 	cd u-boot-v2017 && ./dc-a588.sh
@@ -16,8 +16,4 @@ kernel-6.1.115:
 release:
 	mkdir -p rockdev
 	cp -a uboot/output/uboot.img rockdev/
-	cp -a kernel/output/boot.img rockdev/
 
-ko:
-	ls -alh rockdev/modules/*.ko
-	md5sum rockdev/modules/*.ko

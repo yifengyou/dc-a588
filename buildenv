@@ -1,0 +1,4 @@
+template=None
+uboot=template
+kernel=kernel-5.10.110
+
