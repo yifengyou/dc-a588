@@ -280,7 +280,7 @@ jobs:
         uses: ncipollo/release-action@main
         if: ${{ steps.generate_rockdev_image.outputs.status }} == 'success' && !cancelled()
         with:
-          tag: "Armbian DC-A588 Image"
+          tag: Armbian_DC-A588_Image
           artifacts: /builder/dc-a588.git/output
           allowUpdates: true
           removeArtifacts: false
