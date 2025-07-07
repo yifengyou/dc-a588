@@ -202,6 +202,10 @@ jobs:
           sudo umount /mnt
           mkdir -p /builder/dc-a588.git/release
           mv /builder/armbian.git/output/images/rootfs.img /builder/dc-a588.git/ouput-temp/
+          cd /builder/dc-a588.git/ouput-temp/
+          OUTPUT_NAME=Armbian_DC-A588_${{ inputs.set_release }}_${{ inputs.set_kernel }}_${{ inputs.set_desktop }}
+          mksquashfs rootfs.img  /builder/dc-a588.git/release/${OUTPUT_NAME}_rootfs.img.squashfs
+          rar a /builder/dc-a588.git/release/${OUTPUT_NAME}_rootfs.img.rar rootfs.img
           echo "status=success" >> ${GITHUB_OUTPUT}
 
       - name: Generate updatable image
@@ -281,7 +285,7 @@ jobs:
         if: ${{ steps.generate_rockdev_image.outputs.status }} == 'success' && !cancelled()
         with:
           tag: Armbian_DC-A588_Image
-          artifacts: /builder/dc-a588.git/output
+          artifacts: /builder/dc-a588.git/release/*
           allowUpdates: true
           removeArtifacts: false
           replacesArtifacts: true
