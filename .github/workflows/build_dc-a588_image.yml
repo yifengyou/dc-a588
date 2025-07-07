@@ -245,7 +245,7 @@ jobs:
 
       - name: Generate rockdev image
         id: generate_rockdev_image
-        working-directory: /builder/dc-a588.git/release/RKDevTool/rockdev/image/
+        working-directory: /builder/dc-a588.git/
         if: ${{ steps.generate_updateable_image.outputs.status }} == 'success' && !cancelled()
         run: |
           # rootfs.img   : /builder/dc-a588.git/ouput-temp/rootfs.img
