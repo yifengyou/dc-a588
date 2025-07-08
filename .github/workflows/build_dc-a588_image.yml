@@ -143,7 +143,7 @@ jobs:
           ./dc-a588.sh
           ls -alh output
           md5sum output/uboot.img
-          cp -a output/uboot.img /builder/dc-a588.git/ouput-temp
+          /bin/cp -a output/uboot.img /builder/dc-a588.git/ouput-temp/
           md5sum /builder/dc-a588.git/ouput-temp/uboot.img
           echo "status=success" >> ${GITHUB_OUTPUT}
 
@@ -155,6 +155,9 @@ jobs:
           cd kernel-${{ inputs.set_kernel }}
           ./dc-a588.sh
           ls -alh output
+          md5sum output/boot.img
+          /bin/cp -a output/boot.img /builder/dc-a588.git/ouput-temp/
+          md5sum /builder/dc-a588.git/ouput-temp/boot.img
           echo "status=success" >> ${GITHUB_OUTPUT}
 
       - name: Download armbian source code
