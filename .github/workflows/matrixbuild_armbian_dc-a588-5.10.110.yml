@@ -103,7 +103,11 @@ jobs:
           df -hT ${PWD}
           git clone --recursive --single-branch --branch=master https://github.com/yifengyou/dc-a588.git dc-a588.git
           ls -alh dc-a588.git
-          cd dc-a588.git/template/${{ inputs.set_template }} && ls -alh
+          cd dc-a588.git/template/${{ inputs.set_template }}
+          if [ ! -f boot.img ] ; then
+            echo "no boot.img found! template error!"
+            exit 1
+          fi
           echo "status=success" >> ${GITHUB_OUTPUT}
 
       - name: Copy template
