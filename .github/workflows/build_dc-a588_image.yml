@@ -217,7 +217,11 @@ jobs:
           mv /builder/armbian.git/output/images/rootfs.img /builder/dc-a588.git/ouput-temp/
           cd /builder/dc-a588.git/ouput-temp/
           mksquashfs rootfs.img  /builder/dc-a588.git/release/${{ steps.init.outputs.build_tag }}_rootfs.img.squashfs
+          sha256sum /builder/dc-a588.git/release/${{ steps.init.outputs.build_tag }}_rootfs.img.squashfs > \
+                      /builder/dc-a588.git/release/${{ steps.init.outputs.build_tag }}_rootfs.img.squashfs.sha256
           rar a /builder/dc-a588.git/release/${{ steps.init.outputs.build_tag }}_rootfs.img.rar rootfs.img
+          sha256sum /builder/dc-a588.git/release/${{ steps.init.outputs.build_tag }}_rootfs.img.rar > \
+                      /builder/dc-a588.git/release/${{ steps.init.outputs.build_tag }}_rootfs.img.rar.sha256
           echo "status=success" >> ${GITHUB_OUTPUT}
 
       - name: Generate updatable image
@@ -301,6 +305,80 @@ jobs:
           replacesArtifacts: true
           token: ${{ secrets.GITHUB_TOKEN }}
           body: |
-            ### DC-A588 Image information
-            - Uboot version: U-Boot 2017.09-kdev
-            - Kernel version: 5.10.226-kdev SMP mod_unload aarch64
+            ### DC-A588镜像说明
+
+            1. 镜像命名规则
+            以 * Armbian_DC-A588_noble_5.10.226_cli_01_rockdev.img.rar** 为例
+
+            - "Armbian_DC-A588" 固定前缀
+            - "noble" 发行版，可选 (jammy,noble,bookworm,bullseye)
+            - "5.10.226" 内核版本号，可选 (5.10.110,5.10.226,6.1.115)
+            - "cli" 桌面环境，可选 (cli,xfce,gnome)
+            - "01" 镜像模板，对应名称如下
+              - (01) "GB_A588_ubuntu22.04.5_20250517_180656_xfce4-v01"
+              - (02) "A588_ubuntu20.04_20230202-135921_V1.0"
+              - (03) "GB-RK3588-ubuntu20.04-20250610-105959-V1.38-ALL-A-CM"
+              - (04) "rk3588_linux_openSdk"
+            - "rockdev" 镜像类型，包括一下三种类型
+              - rockdev: RKDevTool + 多个小image镜像（uboot.img、boot.img、rootfs.img等）
+              - update : RKdevTool + update.img
+              - rootfs : 仅rootfs镜像
+
+            2. 系统密码
+
+            - 默认用户名(Default username): root
+            - 默认密码(Default password): 123
+
+            3. rockdev构建输出(rockdev.squashfs/rockdev.rar)
+
+            带windows更新工具RKDevTool，开箱即用。包含以下目录结构，windows下载后解压，执行RKDevTool.exe即可。
+            ```
+            RKDevTool/
+            ├── bin
+            │         ├── adb.exe
+            │         ├── AdbWinApi.dll
+            │         ├── AdbWinUsbApi.dll
+            │         ├── AFPTool.exe
+            │         └── RKImageMaker.exe
+            ├── config.cfg
+            ├── config.ini
+            ├── Language
+            │         ├── Chinese.ini
+            │         └── English.ini
+            ├── RKDevTool.exe
+            └── rockdev
+                └── image
+                    ├── boot.img
+                    ├── MiniLoaderAll.bin
+                    ├── misc.img
+                    ├── modules.tar.gz
+                    ├── oem.img
+                    ├── package-file
+                    ├── parameter.txt
+                    ├── recovery.img
+                    ├── rootfs.img
+                    └── uboot.img
+            ```
+
+            4. update镜像构建输出(update.img.squashfs/update.img.rar)
+
+            解压后输出update.img镜像，请使用 RKDevTool.exe 固件更新
+
+            ```
+            RKDevTool/
+            ├── bin
+            │         ├── adb.exe
+            │         ├── AdbWinApi.dll
+            │         ├── AdbWinUsbApi.dll
+            │         ├── AFPTool.exe
+            │         └── RKImageMaker.exe
+            ├── config.cfg
+            ├── config.ini
+            ├── Language
+            │         ├── Chinese.ini
+            │         └── English.ini
+            ├── RKDevTool.exe
+            └── rockdev
+                └── image
+                    └── update.img
+            ```
