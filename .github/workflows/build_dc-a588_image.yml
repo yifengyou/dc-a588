@@ -14,10 +14,14 @@ on:
         default: "GB_A588_ubuntu22.04.5_20250517_180656_xfce4-v01"
         type: choice
         options:
-          - GB_A588_ubuntu22.04.5_20250517_180656_xfce4-v01
-          - A588_ubuntu20.04_20230202-135921_V1.0
-          - GB-RK3588-ubuntu20.04-20250610-105959-V1.38-ALL-A-CM
-          - rk3588_linux_openSdk
+          - label: "GB_A588_ubuntu22.04.5_20250517_180656_xfce4-v01"
+            value: "01"
+          - label: "A588_ubuntu20.04_20230202-135921_V1.0"
+            value: "02"
+          - label: "GB-RK3588-ubuntu20.04-20250610-105959-V1.38-ALL-A-CM"
+            value: "03"
+          - label: "rk3588_linux_openSdk"
+            value: "04"
       set_release:
         description: "Select OS Release."
         required: false
@@ -203,7 +207,7 @@ jobs:
           mkdir -p /builder/dc-a588.git/release
           mv /builder/armbian.git/output/images/rootfs.img /builder/dc-a588.git/ouput-temp/
           cd /builder/dc-a588.git/ouput-temp/
-          OUTPUT_NAME=Armbian_DC-A588_${{ inputs.set_release }}_${{ inputs.set_kernel }}_${{ inputs.set_desktop }}
+          OUTPUT_NAME=Armbian_DC-A588_${{ inputs.set_release }}_${{ inputs.set_kernel }}_${{ inputs.set_desktop }}_${{ inputs.set_template }}
           mksquashfs rootfs.img  /builder/dc-a588.git/release/${OUTPUT_NAME}_rootfs.img.squashfs
           rar a /builder/dc-a588.git/release/${OUTPUT_NAME}_rootfs.img.rar rootfs.img
           echo "status=success" >> ${GITHUB_OUTPUT}
@@ -239,7 +243,7 @@ jobs:
 
           # generate update.img
           cd /builder/dc-a588.git/output-updatable-image/
-          OUTPUT_NAME=Armbian_DC-A588_${{ inputs.set_release }}_${{ inputs.set_kernel }}_${{ inputs.set_desktop }}
+          OUTPUT_NAME=Armbian_DC-A588_${{ inputs.set_release }}_${{ inputs.set_kernel }}_${{ inputs.set_desktop }}_${{ inputs.set_template }}
           mksquashfs RKDevTool  /builder/dc-a588.git/release/${OUTPUT_NAME}_update.img.squashfs && \
           rar a /builder/dc-a588.git/release/${OUTPUT_NAME}_update.img.rar RKDevTool
           sha256sum /builder/dc-a588.git/release/${OUTPUT_NAME}_update.img.squashfs > \
@@ -271,7 +275,7 @@ jobs:
 
           # generate rockdev.img
           cd /builder/dc-a588.git/output-rockdev-image/
-          OUTPUT_NAME=Armbian_DC-A588_${{ inputs.set_release }}_${{ inputs.set_kernel }}_${{ inputs.set_desktop }}
+          OUTPUT_NAME=Armbian_DC-A588_${{ inputs.set_release }}_${{ inputs.set_kernel }}_${{ inputs.set_desktop }}_${{ inputs.set_template }}
           mksquashfs RKDevTool  /builder/dc-a588.git/release/${OUTPUT_NAME}_rockdev.img.squashfs && \
           rar a /builder/dc-a588.git/release/${OUTPUT_NAME}_rockdev.img.rar RKDevTool
           sha256sum /builder/dc-a588.git/release/${OUTPUT_NAME}_rockdev.img.squashfs > \
