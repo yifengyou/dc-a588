@@ -63,13 +63,13 @@ jobs:
           sudo rm -rf ~/{.cargo,.dotnet,.rustup}
           sudo timedatectl set-timezone "${TZ}"
           # init output prefix  ${{ steps.init.outputs.build_tag }}
-          if [ "${{ matrix.set_template }}" == "GB_A588_ubuntu22.04.5_20250517_180656_xfce4-v01" ] ; then
+          if [ "${{ inputs.set_template }}" == "GB_A588_ubuntu22.04.5_20250517_180656_xfce4-v01" ] ; then
             echo "build_tag=Armbian_DC-A588_${{ matrix.set_release }}_5.10.226_${{ matrix.set_desktop }}_01" >> ${GITHUB_OUTPUT}
-          elif [ "${{ matrix.set_template }}" == "A588_ubuntu20.04_20230202-135921_V1.0" ] ; then
+          elif [ "${{ inputs.set_template }}" == "A588_ubuntu20.04_20230202-135921_V1.0" ] ; then
             echo "build_tag=Armbian_DC-A588_${{ matrix.set_release }}_5.10.226_${{ matrix.set_desktop }}_02" >> ${GITHUB_OUTPUT}
-          elif [ "${{ matrix.set_template }}" == "GB-RK3588-ubuntu20.04-20250610-105959-V1.38-ALL-A-CM" ] ; then
+          elif [ "${{ inputs.set_template }}" == "GB-RK3588-ubuntu20.04-20250610-105959-V1.38-ALL-A-CM" ] ; then
             echo "build_tag=Armbian_DC-A588_${{ matrix.set_release }}_5.10.226_${{ matrix.set_desktop }}_03" >> ${GITHUB_OUTPUT}
-          elif [ "${{ matrix.set_template }}" == "rk3588_linux_openSdk" ] ; then
+          elif [ "${{ inputs.set_template }}" == "rk3588_linux_openSdk" ] ; then
             echo "build_tag=Armbian_DC-A588_${{ matrix.set_release }}_5.10.226_${{ matrix.set_desktop }}_04" >> ${GITHUB_OUTPUT}
           else
             echo "build_tag=Armbian_DC-A588_${{ matrix.set_release }}_5.10.226_${{ matrix.set_desktop }}_99" >> ${GITHUB_OUTPUT}
@@ -102,6 +102,8 @@ jobs:
         run: |
           df -hT ${PWD}
           git clone --recursive --single-branch --branch=master https://github.com/yifengyou/dc-a588.git dc-a588.git
+          ls -alh dc-a588.git
+          cd dc-a588.git/template/${{ inputs.set_template }} && ls -alh
           echo "status=success" >> ${GITHUB_OUTPUT}
 
       - name: Copy template
@@ -109,7 +111,7 @@ jobs:
         working-directory: /builder/dc-a588.git/
         if: ${{ steps.down_d3588.outputs.status }} == 'success' && !cancelled()
         run: |
-          cp -a template/${{ matrix.set_template }} /builder/dc-a588.git/ouput-temp
+          cp -a template/${{ inputs.set_template }} /builder/dc-a588.git/ouput-temp
           echo "status=success" >> ${GITHUB_OUTPUT}
 
       - name: Compile u-boot-v2017 for DC-A588
