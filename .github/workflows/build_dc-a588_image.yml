@@ -142,6 +142,9 @@ jobs:
         run: |
           ./dc-a588.sh
           ls -alh output
+          md5sum output/uboot.img
+          cp -a output/uboot.img /builder/dc-a588.git/ouput-temp
+          md5sum /builder/dc-a588.git/ouput-temp/uboot.img
           echo "status=success" >> ${GITHUB_OUTPUT}
 
       - name: Compile Kernel for DC-A588
