@@ -10,7 +10,7 @@ on:
     inputs:
       set_template:
         description: "Select template"
-        required: false
+        required: true
         default: "GB_A588_ubuntu22.04.5_20250517_180656_xfce4-v01"
         type: choice
         options:
