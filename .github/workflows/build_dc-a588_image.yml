@@ -14,14 +14,10 @@ on:
         default: "GB_A588_ubuntu22.04.5_20250517_180656_xfce4-v01"
         type: choice
         options:
-          - label: "GB_A588_ubuntu22.04.5_20250517_180656_xfce4-v01"
-            value: "01"
-          - label: "A588_ubuntu20.04_20230202-135921_V1.0"
-            value: "02"
-          - label: "GB-RK3588-ubuntu20.04-20250610-105959-V1.38-ALL-A-CM"
-            value: "03"
-          - label: "rk3588_linux_openSdk"
-            value: "04"
+          - "GB_A588_ubuntu22.04.5_20250517_180656_xfce4-v01" # 01
+          - "A588_ubuntu20.04_20230202-135921_V1.0" # 02
+          - "GB-RK3588-ubuntu20.04-20250610-105959-V1.38-ALL-A-CM" #03
+          - "rk3588_linux_openSdk" # 04
       set_release:
         description: "Select OS Release."
         required: false
@@ -83,6 +79,19 @@ jobs:
           sudo sed -i '/NVM_DIR/d;/skel/d' /root/{.bashrc,.profile}
           sudo rm -rf ~/{.cargo,.dotnet,.rustup}
           sudo timedatectl set-timezone "${TZ}"
+          # init output prefix  ${{ steps.init.outputs.build_tag }}
+          if [ "${{ inputs.set_template }}" == "GB_A588_ubuntu22.04.5_20250517_180656_xfce4-v01" ] ; then
+            echo "build_tag=Armbian_DC-A588_${{ inputs.set_release }}_${{ inputs.set_kernel }}_${{ inputs.set_desktop }}_01" >> ${GITHUB_OUTPUT}
+          elif [ "${{ inputs.set_template }}" == "A588_ubuntu20.04_20230202-135921_V1.0" ] ; then
+            echo "build_tag=Armbian_DC-A588_${{ inputs.set_release }}_${{ inputs.set_kernel }}_${{ inputs.set_desktop }}_02" >> ${GITHUB_OUTPUT}
+          elif [ "${{ inputs.set_template }}" == "GB-RK3588-ubuntu20.04-20250610-105959-V1.38-ALL-A-CM" ] ; then
+            echo "build_tag=Armbian_DC-A588_${{ inputs.set_release }}_${{ inputs.set_kernel }}_${{ inputs.set_desktop }}_03" >> ${GITHUB_OUTPUT}
+          elif [ "${{ inputs.set_template }}" == "rk3588_linux_openSdk" ] ; then
+            echo "build_tag=Armbian_DC-A588_${{ inputs.set_release }}_${{ inputs.set_kernel }}_${{ inputs.set_desktop }}_04" >> ${GITHUB_OUTPUT}
+          else
+            echo "build_tag=Armbian_DC-A588_${{ inputs.set_release }}_${{ inputs.set_kernel }}_${{ inputs.set_desktop }}_99" >> ${GITHUB_OUTPUT}
+          fi
+
           echo "status=success" >> ${GITHUB_OUTPUT}
 
       - name: Create simulated physical disk
@@ -207,9 +216,8 @@ jobs:
           mkdir -p /builder/dc-a588.git/release
           mv /builder/armbian.git/output/images/rootfs.img /builder/dc-a588.git/ouput-temp/
           cd /builder/dc-a588.git/ouput-temp/
-          OUTPUT_NAME=Armbian_DC-A588_${{ inputs.set_release }}_${{ inputs.set_kernel }}_${{ inputs.set_desktop }}_${{ inputs.set_template }}
-          mksquashfs rootfs.img  /builder/dc-a588.git/release/${OUTPUT_NAME}_rootfs.img.squashfs
-          rar a /builder/dc-a588.git/release/${OUTPUT_NAME}_rootfs.img.rar rootfs.img
+          mksquashfs rootfs.img  /builder/dc-a588.git/release/${{ steps.init.outputs.build_tag }}_rootfs.img.squashfs
+          rar a /builder/dc-a588.git/release/${{ steps.init.outputs.build_tag }}_rootfs.img.rar rootfs.img
           echo "status=success" >> ${GITHUB_OUTPUT}
 
       - name: Generate updatable image
@@ -243,13 +251,12 @@ jobs:
 
           # generate update.img
           cd /builder/dc-a588.git/output-updatable-image/
-          OUTPUT_NAME=Armbian_DC-A588_${{ inputs.set_release }}_${{ inputs.set_kernel }}_${{ inputs.set_desktop }}_${{ inputs.set_template }}
-          mksquashfs RKDevTool  /builder/dc-a588.git/release/${OUTPUT_NAME}_update.img.squashfs && \
-          rar a /builder/dc-a588.git/release/${OUTPUT_NAME}_update.img.rar RKDevTool
-          sha256sum /builder/dc-a588.git/release/${OUTPUT_NAME}_update.img.squashfs > \
-            /builder/dc-a588.git/release/${OUTPUT_NAME}_update.img.squashfs.sha256
-          sha256sum /builder/dc-a588.git/release/${OUTPUT_NAME}_update.img.rar > \
-            /builder/dc-a588.git/release/${OUTPUT_NAME}_update.img.rar.sha256
+          mksquashfs RKDevTool  /builder/dc-a588.git/release/${{ steps.init.outputs.build_tag }}_update.img.squashfs && \
+          rar a /builder/dc-a588.git/release/${{ steps.init.outputs.build_tag }}_update.img.rar RKDevTool
+          sha256sum /builder/dc-a588.git/release/${{ steps.init.outputs.build_tag }}_update.img.squashfs > \
+            /builder/dc-a588.git/release/${{ steps.init.outputs.build_tag }}_update.img.squashfs.sha256
+          sha256sum /builder/dc-a588.git/release/${{ steps.init.outputs.build_tag }}_update.img.rar > \
+            /builder/dc-a588.git/release/${{ steps.init.outputs.build_tag }}_update.img.rar.sha256
 
       - name: Generate rockdev image
         id: generate_rockdev_image
@@ -275,13 +282,12 @@ jobs:
 
           # generate rockdev.img
           cd /builder/dc-a588.git/output-rockdev-image/
-          OUTPUT_NAME=Armbian_DC-A588_${{ inputs.set_release }}_${{ inputs.set_kernel }}_${{ inputs.set_desktop }}_${{ inputs.set_template }}
-          mksquashfs RKDevTool  /builder/dc-a588.git/release/${OUTPUT_NAME}_rockdev.img.squashfs && \
-          rar a /builder/dc-a588.git/release/${OUTPUT_NAME}_rockdev.img.rar RKDevTool
-          sha256sum /builder/dc-a588.git/release/${OUTPUT_NAME}_rockdev.img.squashfs > \
-            /builder/dc-a588.git/release/${OUTPUT_NAME}_rockdev.img.squashfs.sha256
-          sha256sum /builder/dc-a588.git/release/${OUTPUT_NAME}_rockdev.img.rar > \
-            /builder/dc-a588.git/release/${OUTPUT_NAME}_rockdev.img.rar.sha256
+          mksquashfs RKDevTool  /builder/dc-a588.git/release/${{ steps.init.outputs.build_tag }}_rockdev.img.squashfs && \
+          rar a /builder/dc-a588.git/release/${{ steps.init.outputs.build_tag }}_rockdev.img.rar RKDevTool
+          sha256sum /builder/dc-a588.git/release/${{ steps.init.outputs.build_tag }}_rockdev.img.squashfs > \
+            /builder/dc-a588.git/release/${{ steps.init.outputs.build_tag }}_rockdev.img.squashfs.sha256
+          sha256sum /builder/dc-a588.git/release/${{ steps.init.outputs.build_tag }}_rockdev.img.rar > \
+            /builder/dc-a588.git/release/${{ steps.init.outputs.build_tag }}_rockdev.img.rar.sha256
           echo "status=success" >> ${GITHUB_OUTPUT}
 
       - name: Upload Image to Release
