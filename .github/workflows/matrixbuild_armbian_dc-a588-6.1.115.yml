@@ -30,6 +30,11 @@ jobs:
       matrix:
         set_release: [ bullseye, bookworm, jammy, noble ]
         set_desktop: [ cli, gnome, xfce ]
+        exclude:
+          - set_release: bullseye
+            set_desktop: gnome
+          - set_release: bullseye
+            set_desktop: xfce
 
     if: ${{ github.event.repository.owner.id }} == ${{ github.event.sender.id }}
 
