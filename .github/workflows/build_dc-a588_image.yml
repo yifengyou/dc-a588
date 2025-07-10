@@ -222,7 +222,7 @@ jobs:
         run: |
           # hack rootfs, must start with sudo
           sudo mount rootfs.img /mnt
-          sudo bash -c 'echo "tmpfs /tmp tmpfs defaults,nosuid 0 0" >> /mnt/etc/fstab'
+          # sudo bash -c 'echo "tmpfs /tmp tmpfs defaults,nosuid 0 0" >> /mnt/etc/fstab'
           sync
           sudo umount /mnt
           mkdir -p /builder/dc-a588.git/release
